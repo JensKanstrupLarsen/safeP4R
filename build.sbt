@@ -15,6 +15,9 @@ Compile / PB.targets := Seq(
   scalapb.gen() -> (Compile / sourceManaged).value / "scalapb"
 )
 
+// Silence warnings due to ScalaPB-generated code
+scalacOptions ++= Seq("-Wconf:cat=deprecation&msg=Marked as deprecated in proto file:silent")
+
 // (optional) If you need scalapb/scalapb.proto or anything from
 // google/protobuf/*.proto
 libraryDependencies ++= Seq(
