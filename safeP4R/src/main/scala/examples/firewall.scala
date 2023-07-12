@@ -6,21 +6,34 @@ import scala.annotation.switch
   val s1 = config1.connect(0, "127.0.0.1", 50051)
   val s2 = config1.connect(1, "127.0.0.1", 50052)
   val s3 = config2.connect(2, "127.0.0.1", 50053)
+  val s4 = config2.connect(3, "127.0.0.1", 50054)
 
-  for (s <- List(s1, s2, s3))
-    insert(s1, TableEntry(
-      "Process.firewall",
-      Some("hdr.ipv4.dstAddr", LPM(bytes(10,0,4,4), 32)),
-      "Process.drop",
-      (), 1
-    ))
+  // Writing firewall entries
+  for (s <- List(s1, s2, s3, s4))
+    for (ip <- List(bytes(10,0,42,43), bytes(10,0,13,0), bytes(10,0,37,0)))
+      insert(s, TableEntry(
+        "Process.firewall",
+        Some("hdr.ipv4.dstAddr", LPM(ip, 32)),
+        "Process.drop", (), 1
+      ))
 
-  /*
-  val s1_all_entries = read(s1,TableEntry("*", "*", "*", "*", 0))
-  for (entry <- s1_all_entries) yield
-    entry.table match
-      case "Process.firewall" => insert(s2, TableEntry("Process.firewall", entry.matches, "*", "*", 0))
-      case _ => true
-  */
+  // Reading C1 ipv4 entries
+  val c1_ipv4_entries = read(s1,
+    TableEntry("Process.ipv4_lpm", "*", "*", "*", 0)
+  )
+  // Writing C1 ipv4 entries
+  for (entry <- c1_ipv4_entries)
+    insert(s2, entry)
+
+  // Reading C2 ipv4 entries
+  val c2_ipv4_entries = read(s3,
+    TableEntry("Process.ipv4_table", "*", "*", "*", 0)
+  )
+  // Writing C2 ipv4 entries
+  for (entry <- c2_ipv4_entries)
+    insert(s4, entry)
+
   s1.disconnect()
   s2.disconnect()
+  s3.disconnect()
+  s4.disconnect()

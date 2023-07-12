@@ -12,6 +12,15 @@ import scala.annotation.switch
     (("dstAddr", bytes(8,0,0,0,1,17)), ("port", bytes(1))), 1
   ))
 
+  /* This table entry insertion does not compile
+  insert(s1, TableEntry(
+    "Process.ipv4_lpm",
+    Some("hdr.ipv4.dstAddr", LPM(bytes(10,0,1,1), 32)),
+    "Process.ipv6_forward", // <-- Will cause an error
+    (("dstAddr", bytes(8,0,0,0,1,17)), ("port", bytes(1))), 1
+  ))
+  */
+
   var c1_ipv4_entries = read(s1,TableEntry("*", "*", "*", "*", 0))
 
   if (c1_ipv4_entries.size != 1) {

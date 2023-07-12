@@ -13,13 +13,13 @@ __This project requires:__
   * [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (for running the examples)
   * [Vagrant](https://www.vagrantup.com/) (for running the examples)
 
-## Quick test run
+## Getting Started Guide
 
   1. Navigate to the `vm/` directory.
   2. Run `vagrant up` to build and run the VM. Building the VM for the first time will take 10-15 minutes.
   3. When the VM has started:
-     3.1. Log in to __safeP4R__ user using the password `safeP4R`.
-     3.2. Open a terminal in the VM, navigate to `/home/safeP4R` and run `make test`.
+    1. Log in to __safeP4R__ user using the password `safeP4R`.
+    2. Open a terminal in the VM, navigate to `/home/safeP4R` and run `make test`.
           This will start the mininet network with four hosts and four switches (see the `topology.json` file for the layout).
           It also applies `config1` to `s1` and `s2`, and `config2` to `s3` and `s4`.
   5. Now, navigate to the `safeP4R/` directory on the host machine.
@@ -27,9 +27,7 @@ __This project requires:__
      which connects to the mininet network in the VM and sends some test queries to the `s1` switch.
      If everything goes well, it will print `Test successful!`.
 
-## Further detail
-
-### Project layout
+## Project layout
 
 The source code directory `safeP4R/src/main/scala/` contains several different subfolders:
 
@@ -39,13 +37,13 @@ The source code directory `safeP4R/src/main/scala/` contains several different s
   * `api/`: The type-parametric SafeP4R API used for making P4Runtime queries.
   * `examples/`: Examples that use the SafeP4R API with generated types. Requires the VM to be running.
 
-### Type generation
+## Type generation
 
 To compile a P4info file into a Scala 3 package, use
 
     sbt "runMain parseP4info <p4info-file> <package-name>"
 
-where `<p4info-file>` is the path of the P4info file to be compiled, and
+where `<p4info-file>` is the absolute path of the P4info file to be compiled, and
 `<package-name>` is the name of the package to be generated.
 The generated types are written to stdout.
 
@@ -62,19 +60,37 @@ All existing examples require the VM to be running. Each example has preconditio
 that the network switches have no table entries; for this reason, in the VM,
 close the mininet network (ctrl+d), run `make clean`, and then run `make network` in between each example run.
 
-### Simple IPv4 table update
+### Simple IPv4 table update (Fig. 1)
 
-TODO
+The example can be found in `safeP4R/src/main/scala/examples/forward_c1.scala`
+(with the non-functional code commented out) and can be run by using
 
-### Multi-switch update
+    sbt "runMain forward_c1"
 
-TODO
+### Multi-switch update (Fig. 16)
+
+The example can be found in `safeP4R/src/main/scala/examples/firewall.scala` and can be run by using
+
+    sbt "runMain firewall"
 
 ## Creating a new scenario
 
-1. take a working example from above
-2. slightly change the P4 program (e.g. rename a table, or an action, or the tweak action params)
-3. redeploy the updated P4 program
-4. use the updated P4Info file to regenerate the SafeP4R types
-5. show that the example at point 1 does not compile anymore --- and it is good, because the example is now buggy
-6. show how to fix the program so it type-checks wrt. the updated P4Info
+We now provide an example to demonstrate how updating/extending a P4 program can cause
+existing programs using the API to "go out of sync", i.e. not compile.
+
+  1. In the VM, open the `/home/safeP4R/config1.p4` file, and rename the `ipv4_forward` action
+     in line 95 and 119 to `ipv4_transfer` (or make any other structural change of your choice).
+  2. Recompile the P4 file and P4Info file by running `make clean` followed by `make build`.
+     This will generate a new P4Info file in `/home/safeP4R/build/config1.p4.p4info.json`.
+  3. Copy the contents of the new P4Info file onto a file in your host machine, such as
+     `safeP4R/safeP4R/src/main/scala/examples/config1_new.p4info.json`.
+  4. Generate new types from the P4info file. If you use the file above, the command will look like
+
+      sbt "runMain parseP4info path/to/config1_new.p4info.json config1_new"
+
+  5. Create a new Scala file `config1_new.scala` in the `example/` directory, then place the
+     newly generated types in that file.
+  6. In `forward_c1.scala`, replace `config1` in line 6 and 7 with `config1_new`.
+  7. Try to compile the program. It should fail, reporting an error around line 12.
+  8. Fix the program by changing `"Process.ipv4_forward"` in line 12 to `"Process.ipv4_transfer"`.
+     The program should then compile.

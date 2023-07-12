@@ -1,0 +1,94 @@
+{
+"pkgInfo": {
+    "arch": "v1model"
+},
+"tables": [
+    {
+    "preamble": {
+    "id": 39123287,
+    "name": "MyIngress.firewall",
+    "alias": "firewall"
+    },
+    "matchFields": [
+    {
+    "id": 1,
+    "name": "hdr.ipv4.dstAddr",
+    "bitwidth": 32,
+    "matchType": "LPM"
+    }
+    ],
+    "actionRefs": [
+    {
+    "id": 25652968
+    },
+    {
+    "id": 21257015
+    }
+    ],
+    "size": "1024"
+    },
+    {
+    "preamble": {
+    "id": 37375156,
+    "name": "MyIngress.ipv4_lpm",
+    "alias": "ipv4_lpm"
+    },
+    "matchFields": [
+    {
+    "id": 1,
+    "name": "hdr.ipv4.dstAddr",
+    "bitwidth": 32,
+    "matchType": "LPM"
+    }
+    ],
+    "actionRefs": [
+    {
+    "id": 28792405
+    },
+    {
+    "id": 25652968
+    }
+    ],
+    "size": "1024"
+    }
+],
+"actions": [
+    {
+    "preamble": {
+    "id": 21257015,
+    "name": "NoAction",
+    "alias": "NoAction",
+    "annotations": [
+    "@noWarn(\"unused\")"
+    ]
+    }
+    },
+    {
+    "preamble": {
+    "id": 25652968,
+    "name": "MyIngress.drop",
+    "alias": "drop"
+    }
+    },
+    {
+    "preamble": {
+    "id": 28792405,
+    "name": "MyIngress.ipv4_forward",
+    "alias": "ipv4_forward"
+    },
+    "params": [
+    {
+    "id": 1,
+    "name": "dstAddr",
+    "bitwidth": 48
+    },
+    {
+    "id": 2,
+    "name": "port",
+    "bitwidth": 9
+    }
+    ]
+    }
+],
+"typeInfo": {}
+}

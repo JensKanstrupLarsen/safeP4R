@@ -1,5 +1,9 @@
 dist/*
 *target/
+*bloop/
+*metals/
+*vscode/
+*vagrant/
 lib_managed/
 src_managed/
 project/boot/

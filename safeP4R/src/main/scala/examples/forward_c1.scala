@@ -13,12 +13,14 @@ import scala.annotation.switch
     (("dstAddr", bytes(8,0,0,0,1,17)), ("port", bytes(1))), 1
   ))
 
+  /*
   insert(s1, TableEntry(
     "Process.ipv4_lpm",
-    Some("hdr.ipv4.dstAddr", LPM(bytes(10,0,2,2), 32)),
+    Some("hdr.ipv4.dstAddr", LPM(bytes(10,0,1,1), 32)),
     "Process.ipv4_forward",
-    (("dstAddr", bytes(8,0,0,0,2,34)), ("port", bytes(2))), 1
+    (("dstAddr", bytes(8,0,0,0,1,17)), ("port", bytes(1))), 1
   ))
+  */
 
   val c1_ipv4_entries = read(s1,TableEntry("*", "*", "*", "*", 0))
   for (entry <- c1_ipv4_entries) yield
