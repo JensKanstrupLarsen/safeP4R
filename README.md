@@ -85,8 +85,9 @@ The example can be found in `safeP4R/src/main/scala/examples/firewall.scala` and
 
 ## Creating a new scenario
 
-We now provide an example to demonstrate how updating/extending a P4 program can cause
-existing programs using the API to "go out of sync", i.e. not compile.
+We now provide an small example to demonstrate how updating/extending a P4 configuration can cause
+existing P4Runtime programs to "go out of sync".  Our SafeP4R API can detect these
+situations and produce type errors, thus preventing incorrect P4Runtime programs from compiling and running.
 
   1. In the VM, open the `/home/safeP4R/config1.p4` file, and rename the `ipv4_forward` action
      in line 95 and 119 to `ipv4_transfer` (or make any other structural change of your choice).
@@ -96,11 +97,13 @@ existing programs using the API to "go out of sync", i.e. not compile.
      `safeP4R/safeP4R/src/main/scala/examples/config1_new.p4info.json`.
   4. Generate new types from the P4info file. If you use the file above, the command will look like
 
-      sbt "runMain parseP4info path/to/config1_new.p4info.json config1_new"
+      sbt "runMain parseP4info safeP4R/src/main/scala/examples/config1_new.p4info.json config1_new"
 
   5. Create a new Scala file `config1_new.scala` in the `example/` directory, then place the
      newly generated types in that file.
   6. In `forward_c1.scala`, replace `config1` in line 6 and 7 with `config1_new`.
-  7. Try to compile the program. It should fail, reporting an error around line 12.
-  8. Fix the program by changing `"Process.ipv4_forward"` in line 12 to `"Process.ipv4_transfer"`.
+  7. Try to compile the program. It should fail, reporting an error around line 12:
+     this reflects the fact that the code does not match the updated P4 configuration
+     (it is accessing a table called `ipv4_forward`, but the table is now called `ipv4_transfer`).
+  9. Fix the program by changing `"Process.ipv4_forward"` in line 12 to `"Process.ipv4_transfer"`.
      The program should then compile.
