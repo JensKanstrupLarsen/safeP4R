@@ -25,7 +25,7 @@ __This project requires:__
          This will start the mininet network simulation with four hosts and four switches `s1`..`s4`
          (see the `topology.json` file for the layout).
          It also applies the P4 configuration `config1` to `s1` and `s2`, and `config2` to `s3` and `s4`.
-  7. Now, navigate to the `safeP4R/` directory on the host machine.
+  7. Now, navigate to the `safeP4R/` directory on the **host** machine that is running the VM.
   8. Run `sbt "runMain safeP4Rtest"`. This will run the program in `src/main/scala/examples/safeP4Rtest.scala`,
      which connects to the mininet network in the VM and sends some test queries to the `s1` switch.
      If everything goes well, it will print `Test successful!`.
@@ -50,18 +50,25 @@ where `<p4info-file>` is the absolute path of the P4info file to be compiled, an
 `<package-name>` is the name of the package to be generated.
 The generated types are written to stdout.
 
-## Reproducing examples
+## Reproducing the examples in the companion paper
 
-All of the examples can be run by using
+The instructions for running all examples are given below.  In general, each example can be run by using
 
     sbt "runMain <main-function>"
 
 where `<main-function>` is the `@main` function to be run
 (usually named the same as the example file itself).
 
-All existing examples require the VM to be running. Each example has precondition
-that the network switches have no table entries; for this reason, in the VM,
-close the mininet network (ctrl+d), run `make clean`, and then run `make network` in between each example run.
+### IMPORTANT: before you try any of the examples below
+
+All provided examples require the SafeP4R VM to be running.  **Moreover**, each example assumes
+a clean configuration where the network switches have no preconfigured table entries.
+
+For this reason, **before and in-between running any of the examples below**, you need to perform
+the following steps on the VM:
+1. if the mininet network simulation is already running, close it (Ctrl+d);
+2. run `make clean`;
+3. run `make network`.
 
 ### Simple IPv4 table update (Fig. 1)
 
