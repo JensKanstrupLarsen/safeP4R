@@ -28,7 +28,7 @@ __This project requires:__
   7. Now, navigate to the `safeP4R/` directory on the **host** machine that is running the VM.
   8. Run `sbt "runMain safeP4Rtest"`. This will run the program in `src/main/scala/examples/safeP4Rtest.scala`,
      which connects to the mininet network in the VM and sends some test queries to the `s1` switch.
-     If everything goes well, it will print `Test successful!`.
+     If everything goes well, it will print `Test successful!` followed by `[success]`
 
 ## Project layout
 
