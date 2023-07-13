@@ -17,16 +17,16 @@ __This project requires:__
 
   1. Navigate to the `vm/` directory.
   2. Run `vagrant up` to build and run the VM. Building the VM will take 10-15 minutes.
-  4. When the `vagrant` building procedure is complete, the VM will reboot.
+  3. When the `vagrant` building procedure is complete, the VM will reboot.
      (From now on, you can launch the VM from VirtualBox, without using `vagrant` again.)
-  5. When the VM presents a graphical log-in prompt:
+  4. When the VM presents a graphical log-in prompt:
       1. Log on as user __safeP4R__ with the password `safeP4R`.
       2. Open a terminal in the VM and run `make test`.
          This will start the mininet network simulation with four hosts and four switches `s1`..`s4`
          (see the `topology.json` file for the layout).
          It also applies the P4 configuration `config1` to `s1` and `s2`, and `config2` to `s3` and `s4`.
-  7. Now, navigate to the `safeP4R/` directory on the **host** machine that is running the VM.
-  8. Run `sbt "runMain safeP4Rtest"`. This will run the program in `src/main/scala/examples/safeP4Rtest.scala`,
+  5. Now, navigate to the `safeP4R/` directory on the **host** machine that is running the VM.
+  6. Run `sbt "runMain safeP4Rtest"`. This will run the program in `src/main/scala/examples/safeP4Rtest.scala`,
      which connects to the mininet network in the VM and sends some test queries to the `s1` switch.
      If everything goes well, it will print `Test successful!` followed by `[success]`
 
@@ -68,7 +68,8 @@ For this reason, **before and in-between running any of the examples below**, yo
 the following steps on the VM:
 1. if the mininet network simulation is already running, close it (Ctrl+d);
 2. run `make clean`;
-3. run `make network`.
+3. run `make build`;
+4. run `make network`.
 
 ### Simple IPv4 table update (Fig. 1)
 
