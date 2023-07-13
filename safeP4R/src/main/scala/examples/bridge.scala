@@ -44,7 +44,7 @@ import scala.annotation.switch
   for (entry <- s3_all_entries) yield
     insert(s4, entry)
 
-  //s1.disconnect()
-  //s2.disconnect()
-  //s3.disconnect()
-  //s4.disconnect()
+  s1.disconnect()
+  s2.disconnect()
+  s3.disconnect()
+  s4.disconnect()
