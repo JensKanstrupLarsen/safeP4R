@@ -22,7 +22,7 @@ __This project requires:__
   5. When the VM presents a graphical log-in prompt:
       1. Log on as user __safeP4R__ with the password `safeP4R`.
       2. Open a terminal in the VM, navigate to `/home/safeP4R` and run `make test`.
-         This will start the mininet network with four hosts and four switches `s1`..`s4`
+         This will start the mininet network simulation with four hosts and four switches `s1`..`s4`
          (see the `topology.json` file for the layout).
          It also applies the P4 configuration `config1` to `s1` and `s2`, and `config2` to `s3` and `s4`.
   7. Now, navigate to the `safeP4R/` directory on the host machine.
