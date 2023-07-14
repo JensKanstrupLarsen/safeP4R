@@ -234,10 +234,10 @@ will be updated, and packets from host `h1` will be able to reach `h2`.  As a co
     64 bytes from 10.0.2.2: icmp_seq=3 ttl=62 time=3.27 ms
     ...
 
-### Simple IPv4 table update (Fig. 1)
+### Simple IPv4 table update (Fig. 1 in the companion paper)
 
 The example can be found in `$ROOT/safeP4R/src/main/scala/examples/forward_c1.scala`
-(with the erroneous, non-compiling code commented out) and can be run by running
+(with the erroneous, non-compiling code commented out) and can be executed by running
 (on the host machine, from inside the directory `$ROOT/safeP4R/`):
 
     sbt "runMain forward_c1"
@@ -248,17 +248,19 @@ __Effect__: The program will insert table entries for `s1` and `s2` such that
 ### Second simple table update
 
 The example can be found in `$ROOT/safeP4R/src/main/scala/examples/forward_c2.scala`
-and can be run by running (on the host machine, from inside the directory `$ROOT/safeP4R/`):
+and can be executed by running (on the host machine, from inside the directory
+`$ROOT/safeP4R/`):
 
     sbt "runMain forward_c2"
 
 __Effect__: The program will insert table entries for `s3` and `s4` such that
 `h3` and `h4` can communicate with (ping) each other.
 
-### Multi-switch update (Fig. 16)
+### Multi-switch update (Fig. 16 in the companion paper)
 
-The example can be found in `$ROOT/safeP4R/src/main/scala/examples/firewall.scala` and can be run by running
-(on the host machine, from inside the directory `$ROOT/safeP4R/`):
+The example can be found in `$ROOT/safeP4R/src/main/scala/examples/firewall.scala`
+and can be executed by running (on the host machine, from inside the directory
+`$ROOT/safeP4R/`):
 
     sbt "runMain firewall"
 
@@ -269,7 +271,8 @@ dropped. Effectively, this means that communication is only possible between
 
 ### Full connectivity
 
-The example can be found in `safeP4R/src/main/scala/examples/bridge.scala` and can be run by using
+The example can be found in `safeP4R/src/main/scala/examples/bridge.scala` and
+can be executed by using
 
     sbt "runMain bridge"
 
