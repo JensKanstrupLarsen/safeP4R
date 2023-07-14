@@ -215,7 +215,7 @@ All of the examples affect the connectivity of the network to some degree.
 To verify that the examples have had any effect, the `ping` command can be used
 in the mininet interface:
 
-   h1 ping h2
+    h1 ping h2
 
 `h1` will then attempt to periodically send packets to `h2`. The sending of
 packets can be stopped with Ctrl+c. If packets are successfully sent (_and_
