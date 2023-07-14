@@ -63,11 +63,12 @@ where `<p4info-file>` is the relative path of the P4info file to be compiled, an
 `<package-name>` is the name of the package to be generated.
 The generated Scala package is written to stdout.
 
-In total, the package contains the following:
+The generated Scala package contains:
 
-* Generated match types
-* `Chan` class
-* `connect` function
+* Match types capturing the dependencies between P4Runtime entities (tables, actions, ...)
+* a `connect` function, which establishes a connection to a P4Runtime server and returs a `Chan`nel
+* a `Chan` class, usable to perform the P4Runtime operations (insert, delete, ...) supported by
+  our SafeP4R API.
 
 ### Generated match types
 
