@@ -65,9 +65,9 @@ The generated Scala package is written to stdout.
 
 The generated Scala package contains:
 
-* Match types capturing the dependencies between P4Runtime entities (tables, actions, ...)
-* a `connect` function, which establishes a connection to a P4Runtime server and returs a `Chan`nel
-* a `Chan` class, usable to perform the P4Runtime operations (insert, delete, ...) supported by
+* A set of match types capturing the dependencies between P4Runtime entities (tables, actions, ...)
+* A `connect` function, which establishes a connection to a P4Runtime server and returs a `Chan`nel
+* A `Chan` class, usable to perform the P4Runtime operations (insert, delete, ...) supported by
   our SafeP4R API.
 
 ### Generated match types
@@ -146,33 +146,34 @@ This would produce the following types:
         case "Process.ipv4_forward" => (("dstAddr", ByteString), ("port", ByteString))
         case "*" => "*"
 
-### `Chan` class
+### The `connect` function
 
-A `Chan` object represents a connection between a target (the switch) and a
-controller (the program). The `Chan` class in the generated package inherits
-the abstract `Chan` class from the `safeP4R` package, which is type parametric.
+The `connect` function connects the controller to a target (i.e. a device that
+supports P4 and P4Runtime, e.g. a network switch), returning a `Chan` object
+representing the connection (see below).
+
+Why is the `connect` function generated as part of a package, and not
+type-parametric like the other SafeP4R API functions? This is done to instantiate
+the type parameters of `Chan` objects according to the P4Info of the target device,
+hiding the complexity from the user --- who is only required to know the package that
+corresponds to the configuration of the switch they are trying to connect to.
+
+### The `Chan` class
+
+A `Chan` object represents a connection between a target (i.e. a device that
+supports P4 and P4Runtime, e.g. a network switch) and a controller (the program
+acting as P4Runtime client). The `Chan` class in the generated package inherits
+the abstract `Chan` class from the `safeP4R` package, which is type-parametric.
 The generated `Chan` class is always instantiated with the match types from its
-own package. By doing this, other type parametric SafeP4R API functions that
-take `Chan` objects will have their types constrained to only the types from
-the associated package, which lets the Scala compiler infer the type arguments
-whitout the user having to provide them explicitly.
+own package. By doing this, the type-parametric SafeP4R API functions that
+take `Chan` objects (e.g. `insert`, `delete`, ...) will have their types
+constrained by the types from the associated package: this ensures the correctness
+of API calls, and also helps the Scala compiler infer the type arguments whitout
+the user having to provide them explicitly.
 
-The `Chan` class contains two functions, `toProto` and `fromProto`, which
-convert table entries from their SafeP4R representation to their underlying
-"loosely-typed" protobuf representations, and vice versa.
-
-### `connect` function
-
-The `connect` function connects the controller to a target device, returning a
-`Chan` object representing the connection.
-
-Why is the `connect` function generated as part of a package, and not type
-parametric like the other SafeP4R API functions? If it was type parametric, the
-user would have to supply the types from the package explicitly, which would be
-verbose and could potentially cause errors. This way, by instead having a
-`connect` for each package, we hide the complexity from the user and only
-require them to know the package that corresponds to the configuration of the
-switch they are trying to connect to.
+Internally, the `Chan` class contains two functions, `toProto` and `fromProto`,
+which convert table entries from their strongly-typed SafeP4R representation to
+their underlying "loosely-typed" protobuf representations, and vice versa.
 
 ## Reproducing the examples in the companion paper
 
