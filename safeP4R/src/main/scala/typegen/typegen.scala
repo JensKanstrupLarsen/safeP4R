@@ -1,8 +1,7 @@
-package typegen
-
 import Console.print
 import scala.io.Source._
-import zio._
+//import zio._
+import zio.{RIO,ZIO,ZIOAppDefault,ZLayer}
 import zio.Console.printLine
 import scalapb.zio_grpc.{ServerMain, ServiceList}
 import p4.v1.p4runtime.*
@@ -479,6 +478,12 @@ def genChannel(p4info : P4Info) : RIO[Unit, String] = for {
 }
 // === `connect` API ===
 def genConnect(p4info : P4Info) : RIO[Unit, String] = ZIO.succeed(
+  "/** Connect to a P4Runtime server.\n" +
+  "  * @param id The device ID, which is assigned by the controller (i.e. the caller), and should be unique for each controller.\n" +
+  "  * @param ip IP address of the target device.\n" +
+  "  * @param port Port number of the target device.\n" +
+  "  * @return A `Chan` object used by the other SafeP4R API functions for communication.\n" +
+  "  */\n" +
   "def connect(id : Int, ip : String, port : Int) : Chan =\n" +
   "  val channel = ManagedChannelBuilder.forAddress(ip, port).usePlaintext().build()\n" +
   "  val request = StreamMessageRequest(\n" +
@@ -516,7 +521,7 @@ object parseP4info extends ZIOAppDefault {
       args <- getArgs
       p4info <- {
         if args.length == 2 then
-          val lines = fromFile(args(0)).mkString
+          val lines = fromFile(System.getProperty("user.dir") + "/" + args(0)).mkString
           val parser = scalapb.json4s.Parser()
           val p4info : P4Info = parser.fromJsonString[P4Info](lines)
           ZIO.succeed(p4info)

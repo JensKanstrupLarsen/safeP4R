@@ -118,6 +118,13 @@ class Chan (deviceId : Int, socket : P4RuntimeStub, channel : io.grpc.ManagedCha
       1
     ).asInstanceOf[safeP4R.TableEntry[TM, TA, TP, XN, XA]]
 
+/**
+ * Connect to a P4Runtime server.
+ * @param id The device ID, which is assigned by the controller (i.e. the caller), and should be unique for each controller.
+ * @param ip IP address of the target device.
+ * @param port Port number of the target device.
+ * @return A `Chan` object used by the other SafeP4R API functions for communication.
+ */
 def connect(id : Int, ip : String, port : Int) : Chan =
   val channel = ManagedChannelBuilder.forAddress(ip, port).usePlaintext().build()
   val request = StreamMessageRequest(
