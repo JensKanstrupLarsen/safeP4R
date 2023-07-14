@@ -47,14 +47,16 @@
 % provides support. For unsupported claims, explain why they are omitted.
 This file provides an overview of the companion artifact for the paper
 \textbf{SafeP4R: a Verified API for P4 Control Plane Programs}.
-The artifact consists mainly of two parts:
+The artifact consists of:
 
 \begin{enumerate}
-    \item The type-parametric API \texttt{SafeP4R} used for performing
+    \item The type-parametric API \texttt{SafeP4R} for performing
         P4Runtime operations (\texttt{connect}, \texttt{read}, \texttt{insert},
         etc.).
     \item A software tool for generating Scala 3 types from a given P4Info
         file, used for constraining the \texttt{SafeP4R} API.
+
+    \item A virtual machine with a network simulator.
 \end{enumerate}
 
 \subsection{The \texttt{SafeP4R} API}
@@ -63,21 +65,31 @@ checks the correctness of control plane operations through types. More
 specifically, the API can rule out mismatches between P4 tables, actions and
 action parameters in table entries. The API supports five P4Runtime operations:
 \texttt{connect}, \texttt{read}, \texttt{insert}, \texttt{modify} and
-\texttt{delete}, each of which are layered on top of the loosely-typed P4Runtime
-protobuf RPC.
+\texttt{delete}; each of these operations is layered on top of the official,
+loosely-typed P4Runtime API, which is based on Protobuf RPC.
 
-In its current state, \texttt{SafeP4R} supports all claims of functionality
-made in the paper.
+% In its current state, \texttt{SafeP4R} supports all claims of functionality
+% made in the paper.
 
 \subsection{Type generator}
-The type generator takes as input a P4Info file (representing a P4 device's
-tables, actions, etc.) and generates "equivalent" Scala 3 types which can be
-used together with the API to guarantee type safety.
 
-In its current sate, the type generator supports all claims of functionality
-made in the paper.
+The type generator takes as input a P4Info file (representing a P4 device's
+tables, actions, etc.) and generates corresponding Scala 3 types which, when
+used together with the SafeP4R API, guarantee type safety and progress of
+P4Runtime operations.
+
+\subsection{Virtual machine}
+
+This artifact includes a VM with the network simulator \texttt{mininet} plus
+various scripts to set up a virtual network of P4-enabled switches.  When the VM
+is running, its virtual network can be queried and updated using our
+\texttt{SafeP4R} API, and is used by all examples included in this artifact.
+
+% In its current sate, the type generator supports all claims of functionality
+% made in the paper.
 
 \section{Kick-the-Tires Guide}
+
 % In the Getting Started Guide, give instructions for setup and basic testing.
 % List any software requirements and/or passwords needed to access the artifact.
 % The instructions should take roughly 30 minutes to complete. Reviewers will
@@ -88,30 +100,12 @@ made in the paper.
 % stress the key elements of your artifact. Anyone who has followed the Getting
 % Started Guide should have no technical difficulties with the rest of your
 % artifact.
-In order to quickly start and test the API, use the following guide:
 
-\begin{enumerate}
-    \item Navigate to the \texttt{vm/} directory.
-    \item Run \texttt{vagrant up} to build and run the VM. Building the VM will take 10-15 minutes.
-    \item When the \texttt{vagrant} building procedure is complete, the VM will reboot.
-       (From now on, you can launch the VM from VirtualBox, without using \texttt{vagrant} again.)
-    \item When the VM presents a graphical log-in prompt:
-        \begin{enumerate}
-            \item Log on as user \textbf{safeP4R} with the password \texttt{safeP4R}.
-            \item Open a terminal in the VM and run \texttt{make test}.
-                This will start the mininet network simulation with four hosts and four switches \texttt{s1..s4}
-                (see the \texttt{topology.json} file for the layout).
-                It also applies the P4 configuration \texttt{config1} to \texttt{s1} and \texttt{s2},
-                and \texttt{config2} to \texttt{s3} and \texttt{s4}.
-        \end{enumerate}
-    \item Now, navigate to the \texttt{safeP4R/} directory on the \textbf{host} machine that is running the VM.
-    \item Run \texttt{sbt "runMain safeP4Rtest"}. This will run the program in\\
-        \texttt{src/main/scala/examples/safeP4Rtest.scala}, which connects to the mininet network in the VM and
-        sends some test queries to the \texttt{s1} switch. If everything goes well, it will print
-        \texttt{Test successful!} followed by \texttt{[success]}
-\end{enumerate}
+Please follow the ``Kick-the-Tires'' instructions provided in the file
+\texttt{README.md} included in the artifact.
 
 \section{Step-by-Step Instructions}
+
 % In the Step by Step Instructions, explain how to reproduce any experiments or
 % other activities that support the conclusions in your paper. Write this for
 % readers who have a deep interest in your work and are studying it to improve it
@@ -124,7 +118,10 @@ In order to quickly start and test the API, use the following guide:
 % relative to the paper. If there are any expected warnings or error messages,
 % explain those as well. Ideally, artifacts should include sample outputs and
 % logs for comparison.
-\textit{See the github repo?}
+
+To reproduce the examples in the paper and try additional experiments, please
+follow the instructions provided in the file \texttt{README.md} included in the
+artifact.
 
 \bibliographystyle{plain}
 \bibliography{refs}
