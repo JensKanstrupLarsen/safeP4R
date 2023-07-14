@@ -3,6 +3,9 @@ import com.google.protobuf.ByteString
 import scala.annotation.switch
 
 @main def firewall() =
+  // Fully connect all hosts
+  bridge()
+
   val s1 = config1.connect(0, "127.0.0.1", 50051)
   val s2 = config1.connect(1, "127.0.0.1", 50052)
   val s3 = config2.connect(2, "127.0.0.1", 50053)
@@ -10,7 +13,7 @@ import scala.annotation.switch
 
   // Writing firewall entries
   for (s <- List(s1, s2, s3, s4))
-    for (ip <- List(bytes(10,0,42,43), bytes(10,0,13,0), bytes(10,0,37,0)))
+    for (ip <- List(bytes(10,0,1,1), bytes(10,0,4,4)))
       insert(s, TableEntry(
         "Process.firewall",
         Some("hdr.ipv4.dstAddr", LPM(ip, 32)),

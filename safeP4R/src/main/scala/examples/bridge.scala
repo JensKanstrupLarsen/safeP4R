@@ -8,33 +8,22 @@ import scala.annotation.switch
   val s3 = config2.connect(2, "127.0.0.1", 50053)
   val s4 = config2.connect(3, "127.0.0.1", 50054)
 
-  insert(s1, TableEntry(
-    "Process.ipv4_lpm",
-    Some("hdr.ipv4.dstAddr", LPM(bytes(10,0,3,3), 32)),
-    "Process.ipv4_forward",
-    (("dstAddr", bytes(8,0,0,0,3,51)), ("port", bytes(3))), 1
-  ))
-
-  insert(s1, TableEntry(
-    "Process.ipv4_lpm",
-    Some("hdr.ipv4.dstAddr", LPM(bytes(10,0,4,4), 32)),
-    "Process.ipv4_forward",
-    (("dstAddr", bytes(8,0,0,0,4,68)), ("port", bytes(4))), 1
-  ))
-
-  insert(s3, TableEntry(
-    "Process.ipv4_table",
-    Some("hdr.ipv4.dstAddr", LPM(bytes(10,0,1,1), 32)),
-    "Process.forward_packet",
-    (("dstAddr", bytes(8,0,0,0,1,17)), ("port", bytes(1))), 1
-  ))
-
-  insert(s3, TableEntry(
-    "Process.ipv4_table",
-    Some("hdr.ipv4.dstAddr", LPM(bytes(10,0,2,2), 32)),
-    "Process.forward_packet",
-    (("dstAddr", bytes(8,0,0,0,2,34)), ("port", bytes(2))), 1
-  ))
+  for ((ip,mac,port) <- List((bytes(10,0,1,1), bytes(8,0,0,0,1,17), bytes(1)),
+                             (bytes(10,0,2,2), bytes(8,0,0,0,2,34), bytes(2)),
+                             (bytes(10,0,3,3), bytes(8,0,0,0,3,51), bytes(3)),
+                             (bytes(10,0,4,4), bytes(8,0,0,0,4,68), bytes(4))))
+    insert(s1, TableEntry(
+      "Process.ipv4_lpm",
+      Some("hdr.ipv4.dstAddr", LPM(ip, 32)),
+      "Process.ipv4_forward",
+      (("dstAddr", mac), ("port", port)), 1
+    ))
+    insert(s3, TableEntry(
+      "Process.ipv4_table",
+      Some("hdr.ipv4.dstAddr", LPM(ip, 32)),
+      "Process.forward_packet",
+      (("dstAddr", mac), ("port", port)), 1
+    ))
 
   val s1_all_entries = read(s1,TableEntry("Process.ipv4_lpm", "*", "*", "*", 0))
   for (entry <- s1_all_entries) yield

@@ -71,18 +71,66 @@ the following steps on the VM:
 3. run `make build`;
 4. run `make network`.
 
+### Testing the effect of running the examples
+All of the examples affect the connectivity of the network to some degree.
+To verify that the examples have had any effect, the `ping` command can be used
+in the mininet interface:
+
+   h1 ping h2
+
+`h1` will then attempt to periodically send packets to `h2`. The sending of
+packets can be stopped with Ctrl+c. If packets are successfully sent (_and_
+replies are received), you should get an output similar to this:
+
+    mininet> h1 ping h2
+    PING 10.0.2.2 (10.0.2.2) 56(84) bytes of data.
+    64 bytes from 10.0.2.2: icmp_seq=1 ttl=62 time=6.15 ms
+    64 bytes from 10.0.2.2: icmp_seq=2 ttl=62 time=3.43 ms
+    64 bytes from 10.0.2.2: icmp_seq=3 ttl=62 time=3.27 ms
+    ...
+
+If the ping is not successful, the command will appear to hang, with no output
+being generated.
+
 ### Simple IPv4 table update (Fig. 1)
 
 The example can be found in `safeP4R/src/main/scala/examples/forward_c1.scala`
-(with the non-functional code commented out) and can be run by using
+(with the erroneous, non-compiling code commented out) and can be run by using
 
     sbt "runMain forward_c1"
+
+__Effect__: The program will insert table entries for `s1` and `s2` such that
+`h1` and `h2` can communicate with (ping) each other.
+
+### Second simple table update
+
+The example can be found in `safeP4R/src/main/scala/examples/forward_c2.scala`
+and can be run by using
+
+    sbt "runMain forward_c2"
+
+__Effect__: The program will insert table entries for `s3` and `s4` such that
+`h3` and `h4` can communicate with (ping) each other.
 
 ### Multi-switch update (Fig. 16)
 
 The example can be found in `safeP4R/src/main/scala/examples/firewall.scala` and can be run by using
 
     sbt "runMain firewall"
+
+__Effect__: The program will insert table entries into the `firewall` table in
+each switch, causing packets with destination addresses to `h1` or `h4` to be
+dropped. Effectively, this means that communication is only possible between
+`h2` and `h3`.
+
+### Full connectivity
+
+The example can be found in `safeP4R/src/main/scala/examples/bridge.scala` and can be run by using
+
+    sbt "runMain bridge"
+
+__Effect__: The program will insert table entries for all switches such that
+each host can communicate with any other host.
 
 ## Creating a new scenario
 
