@@ -210,14 +210,14 @@ the following steps **on the VM**:
 4. run `make network`.
 
 ### Testing the effect of running the examples
-All of the examples affect the connectivity of the network to some degree.
-To verify that the examples have had any effect, the `ping` command can be used
-at the `mininet>` prompt on the VM:
+All of the examples described below affect the connectivity of the network to some degree.
+To verify that the examples have had any effect, you can use e.g. a `ping` command at the
+`mininet>` prompt on the VM:
 
     h1 ping h2
 
-Host `h1` will then attempt to periodically send packets to `h2`. The sending of
-packets can be stopped with Ctrl+c.
+Host `h1` will then attempt to periodically send packets to `h2`. The sending of packets
+can be stopped with Ctrl+c.
 
 If you attempt the `ping` command above _before_ running one of the examples below, you will
 see no output: this is because there is no route between hosts `h1` and `h2` in the virtual
