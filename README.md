@@ -238,7 +238,13 @@ The example can be found in `$ROOT/safeP4R/src/main/scala/examples/forward_c1.sc
     sbt "runMain forward_c1"
 
 __Effect__: The program will insert table entries for `s1` and `s2` such that
-`h1` and `h2` can communicate with (ping) each other.
+`h1` and `h2` can communicate with (ping) each other. To test connectivity, use
+
+    h1 ping h2
+
+To see how the update changes connectivity, run the `ping` command _before_
+running the control program, and observe how the pings only start to succeed
+after running the program.
 
 ### Second simple table update
 
@@ -248,19 +254,13 @@ and can be run by running (on the host machine, from inside the directory `$ROOT
     sbt "runMain forward_c2"
 
 __Effect__: The program will insert table entries for `s3` and `s4` such that
-`h3` and `h4` can communicate with (ping) each other.
+`h3` and `h4` can communicate with (ping) each other. To test connectivity, use
 
-### Multi-switch update (Fig. 16)
+    h3 ping h4
 
-The example can be found in `$ROOT/safeP4R/src/main/scala/examples/firewall.scala` and can be run by running
-(on the host machine, from inside the directory `$ROOT/safeP4R/`):
-
-    sbt "runMain firewall"
-
-__Effect__: The program will insert table entries into the `firewall` table in
-each switch, causing packets with destination addresses to `h1` or `h4` to be
-dropped. Effectively, this means that communication is only possible between
-`h2` and `h3`.
+To see how the update changes connectivity, run the `ping` command _before_
+running the control program, and observe how the pings only start to succeed
+after running the program.
 
 ### Full connectivity
 
@@ -269,7 +269,32 @@ The example can be found in `safeP4R/src/main/scala/examples/bridge.scala` and c
     sbt "runMain bridge"
 
 __Effect__: The program will insert table entries for all switches such that
-each host can communicate with any other host.
+each host can communicate with any other host. To test connectivity, use
+
+    h1 ping h4
+
+To see how the update changes connectivity, run the `ping` command _before_
+running the control program, and observe how the pings only start to succeed
+after running the program.
+
+### Multi-switch update (Fig. 16)
+
+The example can be found in `$ROOT/safeP4R/src/main/scala/examples/firewall.scala` and can be run by running
+(on the host machine, from inside the directory `$ROOT/safeP4R/`):
+
+    sbt "runMain firewall"
+
+__Effect__: The program will establish full connectivity between all hosts
+(using the previous example program), then insert table entries into the
+`firewall` table in each switch, causing packets with destination addresses to
+`h1` or `h4` to be dropped. Effectively, this means that communication is only
+possible between `h2` and `h3`.  To test connectivity, use
+
+    h2 ping h3
+
+To see how the update changes connectivity, run the `ping` command _before_
+running the control program, and observe how the pings only start to succeed
+after running the program.
 
 ## Creating a new scenario
 
