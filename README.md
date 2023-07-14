@@ -288,22 +288,28 @@ situations and produce type errors, thus preventing incorrect P4Runtime programs
 
   1. In the VM, open the file `config1.p4` (in the home directory of the user safeP4R), and
      rename the `ipv4_forward` action on line 95 and 119 to `ipv4_transfer`.
-  2. Recompile the P4 file and P4Info file by running `make clean` followed by `make build`.
-     This will generate a new P4Info file in `/home/safeP4R/build/config1.p4.p4info.json`.
+  2. In the VM, recompile the P4 file and P4Info file by running `make clean` followed by `make build`.
+     This will generate a new P4Info file in `build/config1.p4.p4info.json`.
   3. Copy the contents of the new P4Info file onto a file in your host machine, such as
      `$ROOT/safeP4R/src/main/scala/examples/config1_new.p4info.json`.
-  4. Generate new types from the P4info file. If you use the file above, the command will look like
+  4. On the host machine, generate new types from the updated P4info file. If you use the file name above,
+     the command is:
 
-      sbt "runMain parseP4info safeP4R/src/main/scala/examples/config1_new.p4info.json config1_new"
+         sbt "runMain parseP4info src/main/scala/examples/config1_new.p4info.json config1_new"
 
-  5. Create a new Scala file `config1_new.scala` in the `example/` directory, then place the
-     newly generated types in that file.
-  6. In `forward_c1.scala`, replace `config1` in line 6 and 7 with `config1_new`.
-  7. Try to compile the program. It should fail, reporting an error around line 12:
-     this reflects the fact that the code does not match the updated P4 configuration
-     (it is accessing a table called `ipv4_forward`, but the table is now called `ipv4_transfer`).
+  5. On the host machine, create a new Scala file `$ROOT/safeP4R/src/main/scala/examples/config1_new.scala`,
+     and copy&paste there the Scala code produced by the command at point 4.
+  6. On the host machine, edit the file `$ROOT/safeP4R/src/main/scala/examples/forward_c1.scala` by
+     replacing the package name `config1` in lines 6 and 7 with `config1_new`.
+  7. On the host machine, try to compile and run the program above by running:
+
+         sbt "runMain forward_c1"
+
+     The compilation should fail, reporting an error around line 12: this reflects the fact that the
+     code does not match the updated P4 configuration (it is accessing a table called `ipv4_forward`,
+     but the table is now called `ipv4_transfer`).
   8. Fix the program by changing `"Process.ipv4_forward"` in line 12 to `"Process.ipv4_transfer"`.
-     The program should then compile.
+     The program now compile and run.
 
 If you are familiar with the P4 language, you can follow the steps above to try more experiments: you
 can apply other changes to the file `config1.p4` (e.g. rename actions, change their parameter types,
