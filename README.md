@@ -309,7 +309,7 @@ situations and produce type errors, thus preventing incorrect P4Runtime programs
      code does not match the updated P4 configuration (it is accessing a table called `ipv4_forward`,
      but the table is now called `ipv4_transfer`).
   8. Fix the program by changing `"Process.ipv4_forward"` in line 12 to `"Process.ipv4_transfer"`.
-     The program now compile and run.
+     The program should now compile and run.
 
 If you are familiar with the P4 language, you can follow the steps above to try more experiments: you
 can apply other changes to the file `config1.p4` (e.g. rename actions, change their parameter types,
