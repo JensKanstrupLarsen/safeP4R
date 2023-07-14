@@ -23,7 +23,7 @@ From now on, we write `$ROOT` to denote the root directory of the artifact.
      (From now on, you can launch the VM from VirtualBox, without using `vagrant` again.)
   5. When the VM presents a graphical log-in prompt:
       1. Log on as user __safeP4R__ with the password `safeP4R`.
-      2. Open a terminal in the VM and run `make test`.
+      2. Open a terminal in the VM and run `make test` (in the home directory of the user safeP4R).
          This will start the mininet network simulation with four hosts and four switches `s1`..`s4`
          (see the `topology.json` file for the layout).
          It also applies the P4 configuration `config1` to `s1` and `s2`, and `config2` to `s3` and `s4`.
@@ -116,12 +116,12 @@ We now provide an small example to demonstrate how updating/extending a P4 confi
 existing P4Runtime programs to "go out of sync".  Our SafeP4R API can detect these
 situations and produce type errors, thus preventing incorrect P4Runtime programs from compiling and running.
 
-  1. In the VM, open the `/home/safeP4R/config1.p4` file, and rename the `ipv4_forward` action
+  1. In the VM, open the file `~/config1.p4` file, and rename the `ipv4_forward` action
      in line 95 and 119 to `ipv4_transfer` (or make any other structural change of your choice).
   2. Recompile the P4 file and P4Info file by running `make clean` followed by `make build`.
      This will generate a new P4Info file in `/home/safeP4R/build/config1.p4.p4info.json`.
   3. Copy the contents of the new P4Info file onto a file in your host machine, such as
-     `safeP4R/safeP4R/src/main/scala/examples/config1_new.p4info.json`.
+     `$ROOT/safeP4R/src/main/scala/examples/config1_new.p4info.json`.
   4. Generate new types from the P4info file. If you use the file above, the command will look like
 
       sbt "runMain parseP4info safeP4R/src/main/scala/examples/config1_new.p4info.json config1_new"
