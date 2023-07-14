@@ -80,7 +80,7 @@ All provided examples require the SafeP4R VM to be running.  **Moreover**, each 
 a clean configuration where the network switches have no preconfigured table entries.
 
 For this reason, **before and in-between running any of the examples below**, you need to perform
-the following steps on the VM:
+the following steps **on the VM**:
 1. if the mininet network simulation is already running, close it (Ctrl+d);
 2. run `make clean`;
 3. run `make build`;
@@ -89,15 +89,26 @@ the following steps on the VM:
 ### Simple IPv4 table update (Fig. 1)
 
 The example can be found in `$ROOT/safeP4R/src/main/scala/examples/forward_c1.scala`
-(with the non-functional code commented out) and can be run by using
+(with the non-functional code commented out) and can be run by running
+(on the host machine, from inside the directory `$ROOT/safeP4R/`):
 
     sbt "runMain forward_c1"
 
+**NOTE**: when the execution terminates, you may also see the following message, that **you can ignore**:
+
+    [ERROR] io.grpc.StatusRuntimeException: UNAVAILABLE: Channel shutdown
+
 ### Multi-switch update (Fig. 16)
 
-The example can be found in `$ROOT/safeP4R/src/main/scala/examples/firewall.scala` and can be run by using
+
+The example can be found in `$ROOT/safeP4R/src/main/scala/examples/firewall.scala` and can be run by running
+(on the host machine, from inside the directory `$ROOT/safeP4R/`):
 
     sbt "runMain firewall"
+
+**NOTE**: when the execution terminates, you may also see the following message, that **you can ignore**:
+
+    [ERROR] io.grpc.StatusRuntimeException: UNAVAILABLE: Channel shutdown
 
 ## Creating a new scenario
 
