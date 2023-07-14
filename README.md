@@ -212,13 +212,20 @@ the following steps **on the VM**:
 ### Testing the effect of running the examples
 All of the examples affect the connectivity of the network to some degree.
 To verify that the examples have had any effect, the `ping` command can be used
-in the mininet interface:
+at the `mininet>` prompt on the VM:
 
     h1 ping h2
 
-`h1` will then attempt to periodically send packets to `h2`. The sending of
-packets can be stopped with Ctrl+c. If packets are successfully sent (_and_
-replies are received), you should get an output similar to this:
+Host `h1` will then attempt to periodically send packets to `h2`. The sending of
+packets can be stopped with Ctrl+c.
+
+If you attempt the `ping` command above _before_ running one of the examples below, you will
+see no output: this is because there is no route between hosts `h1` and `h2` in the virtual
+network simulated by `mininet`.
+
+After you run one of the examples below, the P4 tables of the devices in the virtual network
+will be updated, and packets from host `h1` will be able to reach `h2`.  As a consequence, the
+`ping` command above will produce an output similar to:
 
     mininet> h1 ping h2
     PING 10.0.2.2 (10.0.2.2) 56(84) bytes of data.
@@ -226,9 +233,6 @@ replies are received), you should get an output similar to this:
     64 bytes from 10.0.2.2: icmp_seq=2 ttl=62 time=3.43 ms
     64 bytes from 10.0.2.2: icmp_seq=3 ttl=62 time=3.27 ms
     ...
-
-If the ping is not successful, the command will appear to hang, with no output
-being generated.
 
 ### Simple IPv4 table update (Fig. 1)
 
