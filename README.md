@@ -35,9 +35,9 @@ From now on, we write `$ROOT` to denote the root directory of the artifact.
 
 If everything goes well, after the last step you will see `Test successful!` followed by `[success]`.
 **NOTE**: you may also see the following message, that **you can ignore**:
-```
-[ERROR] io.grpc.StatusRuntimeException: UNAVAILABLE: Channel shutdown
-```
+
+    [ERROR] io.grpc.StatusRuntimeException: UNAVAILABLE: Channel shutdown
+
 At this point, the artifact should be working.
 
 ## Project layout
@@ -53,6 +53,8 @@ The source code directory `$ROOT/safeP4R/src/main/scala/` contains several subfo
 
 ## Type generation
 
+The following instructions must be followed from inside the directory `$ROOT/safeP4R/`.
+
 To compile a P4info file into a Scala 3 package, use
 
     sbt "runMain parseP4info <p4info-file> <package-name>"
@@ -65,9 +67,7 @@ The generated types are written to stdout.
 
 The instructions for running all examples are given below.  In general, each example can be run by launching:
 
-```
-sbt "runMain <main-function>"
-```
+    sbt "runMain <main-function>"
 
 where `<main-function>` is the `@main` function to be run
 (usually named the same as the example file itself).
@@ -86,14 +86,14 @@ the following steps on the VM:
 
 ### Simple IPv4 table update (Fig. 1)
 
-The example can be found in `safeP4R/src/main/scala/examples/forward_c1.scala`
+The example can be found in `$ROOT/safeP4R/src/main/scala/examples/forward_c1.scala`
 (with the non-functional code commented out) and can be run by using
 
     sbt "runMain forward_c1"
 
 ### Multi-switch update (Fig. 16)
 
-The example can be found in `safeP4R/src/main/scala/examples/firewall.scala` and can be run by using
+The example can be found in `$ROOT/safeP4R/src/main/scala/examples/firewall.scala` and can be run by using
 
     sbt "runMain firewall"
 
