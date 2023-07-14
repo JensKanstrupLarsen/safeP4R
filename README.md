@@ -51,6 +51,10 @@ The source code directory `$ROOT/safeP4R/src/main/scala/` contains several subfo
   * `api/`: The type-parametric SafeP4R API used for making P4Runtime queries, outlined in Section 7 of the companion paper.
   * `examples/`: Examples that use the SafeP4R API with generated types. All these examples require the SafeP4R VM to be running.
 
+For inspecting the code, we recommend using [VS Code](https://code.visualstudio.com/)
+with the [Scala Metals](https://scalameta.org/metals/docs/editors/vscode) extension,
+in order to explore the files more easily and view type errors in real-time.
+
 ## Type generation
 
 The following instructions must be followed from inside the directory `$ROOT/safeP4R/`.
@@ -312,8 +316,9 @@ We now provide an small example to demonstrate how updating/extending a P4 confi
 existing P4Runtime programs to "go out of sync".  Our SafeP4R API can detect these
 situations and produce type errors, thus preventing incorrect P4Runtime programs from compiling and running.
 
-  1. In the VM, open the file `config1.p4` (in the home directory of the user safeP4R), and
-     rename the `ipv4_forward` action on line 95 and 119 to `ipv4_transfer`.
+  1. In the VM, replace the contents of file `config1.p4` (in the home directory of the user safeP4R),
+     with the contents of `config1_new.p4` (also in the same directory). The files are almost identical,
+     except that the `dstAddr` field in the IPv4 header is renamed to `dstIP`.
   2. In the VM, recompile the P4 file and P4Info file by running `make clean` followed by `make build`.
      This will generate a new P4Info file in `build/config1.p4.p4info.json`.
   3. Copy the contents of the new P4Info file onto a file in your host machine, such as
@@ -327,15 +332,17 @@ situations and produce type errors, thus preventing incorrect P4Runtime programs
      and copy&paste there the Scala code produced by the command at point 4.
   6. On the host machine, edit the file `$ROOT/safeP4R/src/main/scala/examples/forward_c1.scala` by
      replacing the package name `config1` in lines 6 and 7 with `config1_new`.
-  7. On the host machine, try to compile and run the modified program above by running:
+  7. On the host machine, try to compile the modified program above by running:
 
-         sbt "runMain forward_c1"
+         sbt compile
 
-     The compilation should fail, reporting an error around line 12: this reflects the fact that the
-     code does not match the updated P4 configuration (it is accessing a table called `ipv4_forward`,
-     but the table is now called `ipv4_transfer`).
-  8. Fix the program by changing `"Process.ipv4_forward"` in line 12 to `"Process.ipv4_transfer"`.
-     The program should now compile and run.
+     The compilation should fail, reporting an error around line 11 and 27: this reflects the fact that the
+     code does not match the updated P4 configuration (it is referring to a field called `dstAddr`,
+     but the field is now called `dstIP`).
+  8. Fix the program by replacing all occurrences of `hdr.ipv4.dstAddr` with `hdr.ipv4.dstIP`
+     (line __11__ and __27__). The program should now compile.
+  9. To test that the program works as intended, follow the same steps as for running the
+     __Simple IPv4 table update__ example (remember to also start the network in the VM).
 
 If you are familiar with the P4 language, you can follow the steps above to try more experiments: you
 can apply other changes to the file `config1.p4` (e.g. rename actions, change their parameter types,
