@@ -301,7 +301,7 @@ situations and produce type errors, thus preventing incorrect P4Runtime programs
      and copy&paste there the Scala code produced by the command at point 4.
   6. On the host machine, edit the file `$ROOT/safeP4R/src/main/scala/examples/forward_c1.scala` by
      replacing the package name `config1` in lines 6 and 7 with `config1_new`.
-  7. On the host machine, try to compile and run the program above by running:
+  7. On the host machine, try to compile and run the modified program above by running:
 
          sbt "runMain forward_c1"
 
