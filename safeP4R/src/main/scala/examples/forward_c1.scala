@@ -35,8 +35,5 @@ import scala.annotation.switch
       case "Process.ipv4_lpm" => insert(s2, entry)
       case _ => true
 
-  println(read(s1,TableEntry("*", "*", "*", "*", 0)))
-  println(read(s2,TableEntry("*", "*", "*", "*", 0)))
-
   s1.disconnect()
   s2.disconnect()
