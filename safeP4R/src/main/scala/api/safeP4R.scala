@@ -144,7 +144,7 @@ def write [TM[_], TA[_], TP[_]]
 /** Inserts a table entry into a table.
   *
   * @param c The channel used to communicate with the target device.
-  * @param tableEntry The table entry to insert. For details on table entry insertion, see the P4Runtime specification.
+  * @param tableEntry The table entry to insert. For details on how the operation works, see the P4Runtime specification.
   * @return A boolean indicating whether or not the insertion was successful (true if successful, false otherwise).
   */
 def insert [TM[_], TA[_], TP[_]]
@@ -154,7 +154,7 @@ def insert [TM[_], TA[_], TP[_]]
 /** Modifies a table entry in a table.
   *
   * @param c The channel used to communicate with the target device.
-  * @param tableEntry The table entry to modify. For details on table entry modification, see the P4Runtime specification.
+  * @param tableEntry The table entry to modify. For details on how the operation works, see the P4Runtime specification.
   * @return A boolean indicating whether or not the modification was successful (true if successful, false otherwise).
   */
 def modify [TM[_], TA[_], TP[_]]
@@ -164,7 +164,7 @@ def modify [TM[_], TA[_], TP[_]]
 /** Deletes a table entry from a table.
   *
   * @param c The channel used to communicate with the target device.
-  * @param tableEntry The table entry to delete. For details on table entry deletion, see the P4Runtime specification.
+  * @param tableEntry The table entry to delete. For details on how the operation works, see the P4Runtime specification.
   * @return A boolean indicating whether or not the deletion was successful (true if successful, false otherwise).
   */
 def delete [TM[_], TA[_], TP[_]]
