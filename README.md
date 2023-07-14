@@ -65,7 +65,7 @@ The generated Scala package is written to stdout.
 
 As an example of how to generate a package, navigate to the `$ROOT/safeP4R/` directory and run:
 
-   sbt "runMain parseP4info src/main/scala/examples/config1.p4info.json config1"
+    sbt "runMain parseP4info src/main/scala/examples/config1.p4info.json config1"
 
 This will generate a package based on the configuration in the `config1.p4info.json` file
 and write it to stdout.
