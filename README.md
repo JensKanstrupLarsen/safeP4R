@@ -65,6 +65,8 @@ The generated types are written to stdout.
 
 ## Reproducing the examples in the companion paper
 
+The following instructions must be followed from inside the directory `$ROOT/safeP4R/`.
+
 The instructions for running all examples are given below.  In general, each example can be run by launching:
 
     sbt "runMain <main-function>"
