@@ -271,7 +271,7 @@ dropped. Effectively, this means that communication is only possible between
 
 ### Full connectivity
 
-The example can be found in `safeP4R/src/main/scala/examples/bridge.scala` and
+The example can be found in `$ROOT/safeP4R/src/main/scala/examples/bridge.scala` and
 can be executed by using
 
     sbt "runMain bridge"
