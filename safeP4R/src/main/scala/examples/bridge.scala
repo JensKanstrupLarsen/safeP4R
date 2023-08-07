@@ -5,8 +5,8 @@ import scala.annotation.switch
 @main def bridge() =
   val s1 = config1.connect(0, "127.0.0.1", 50051)
   val s2 = config1.connect(1, "127.0.0.1", 50052)
-  val s3 = config2.connect(2, "127.0.0.1", 50053)
-  val s4 = config2.connect(3, "127.0.0.1", 50054)
+  val s3 = config2_new.connect(2, "127.0.0.1", 50053)
+  val s4 = config2_new.connect(3, "127.0.0.1", 50054)
 
   for ((ip,mac,port) <- List((bytes(10,0,1,1), bytes(8,0,0,0,1,17), bytes(1)),
                              (bytes(10,0,2,2), bytes(8,0,0,0,2,34), bytes(2)),

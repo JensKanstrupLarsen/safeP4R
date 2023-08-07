@@ -3,8 +3,8 @@ import com.google.protobuf.ByteString
 import scala.annotation.switch
 
 @main def forward_c2() =
-  val s3 = config2.connect(2, "127.0.0.1", 50053)
-  val s4 = config2.connect(3, "127.0.0.1", 50054)
+  val s3 = config2_new.connect(2, "127.0.0.1", 50053)
+  val s4 = config2_new.connect(3, "127.0.0.1", 50054)
 
   insert(s3, TableEntry(
     "Process.ipv4_table",

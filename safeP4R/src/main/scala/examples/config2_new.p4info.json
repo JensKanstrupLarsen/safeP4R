@@ -34,13 +34,8 @@
        "alias": "ipv4_table"
       },
       "matchFields": [
-        {
-            "id": 1,
-            "name": "hdr.ipv4.srcAddr",
-            "matchType": "EXACT"
-        },
        {
-        "id": 2,
+        "id": 1,
         "name": "hdr.ipv4.dstAddr",
         "bitwidth": 32,
         "matchType": "LPM"

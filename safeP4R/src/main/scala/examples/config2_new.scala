@@ -1,4 +1,4 @@
-package config2
+package config2_new
 
 import safeP4R.{Exact, LPM, Optional, Range, Ternary, SafeP4RRuntimeObserver}
 import com.google.protobuf.ByteString
@@ -19,7 +19,7 @@ import p4.v1.p4runtime.Action.Param
 type TableMatchFields[TN] =
   TN match
     case "Process.firewall" => (Option[("hdr.ipv4.dstAddr", LPM)]) | "*"
-    case "Process.ipv4_table" => (("hdr.ipv4.srcAddr", Exact), (Option[("hdr.ipv4.dstAddr", LPM)])) | "*"
+    case "Process.ipv4_table" => (Option[("hdr.ipv4.dstAddr", LPM)]) | "*"
     case "*" => "*"
 type ActionName = "NoAction" | "Process.drop" | "Process.forward_packet" | "*"
 
@@ -49,7 +49,7 @@ class Chan (deviceId : Int, socket : P4RuntimeStub, channel : io.grpc.ManagedCha
         case ("*", _) => Seq.empty
         case (_, _ : "*") => Seq.empty
         case ("Process.firewall", (t0)) => t0.asInstanceOf[Option[("hdr.ipv4.dstAddr", LPM)]].map((_, t) => safeP4R.matchFieldToProto(1, t)).toSeq
-        case ("Process.ipv4_table", ((_, t0), t1)) => Seq(safeP4R.matchFieldToProto(1, t0.asInstanceOf[Exact])) ++ t1.asInstanceOf[Option[("hdr.ipv4.dstAddr", LPM)]].map((_, t) => safeP4R.matchFieldToProto(2, t)).toSeq
+        case ("Process.ipv4_table", (t0)) => t0.asInstanceOf[Option[("hdr.ipv4.dstAddr", LPM)]].map((_, t) => safeP4R.matchFieldToProto(1, t)).toSeq
 
     val actionId =
       te.action match
@@ -94,7 +94,7 @@ class Chan (deviceId : Int, socket : P4RuntimeStub, channel : io.grpc.ManagedCha
     val matches =
       te.tableId match
         case 43479776 => (te.`match`.find(_.fieldId == 1).map(fm => ("hdr.ipv4.dstAddr", LPM(fm.fieldMatchType.lpm.get.value, fm.fieldMatchType.lpm.get.prefixLen))))
-        case 39373426 => (te.`match`.find(_.fieldId == 1).map(fm => ("hdr.ipv4.srcAddr", Exact(fm.fieldMatchType.exact.get.value))).get, te.`match`.find(_.fieldId == 2).map(fm => ("hdr.ipv4.dstAddr", LPM(fm.fieldMatchType.lpm.get.value, fm.fieldMatchType.lpm.get.prefixLen))))
+        case 39373426 => (te.`match`.find(_.fieldId == 1).map(fm => ("hdr.ipv4.dstAddr", LPM(fm.fieldMatchType.lpm.get.value, fm.fieldMatchType.lpm.get.prefixLen))))
         case 0 => "*"
     val action =
       actionId match
