@@ -231,7 +231,7 @@ def genMatchFieldToProtoCase(table : String, mfs : Seq[MatchField]) : RIO[Unit, 
       case None => ZIO.fail(new Exception("Failure: MatchField has no match type."))
       case Some(value) =>
         value match
-          case EXACT => ZIO.succeed("Seq(safeP4R.matchFieldToProto(" + mf.id + ", t" + idx + "))")
+          case EXACT => ZIO.succeed("Seq(safeP4R.matchFieldToProto(" + mf.id + ", t" + idx + ".asInstanceOf[Exact]))")
           case _ => for {
               caseVarType <- genMatchFieldArg(mf)
             } yield {
