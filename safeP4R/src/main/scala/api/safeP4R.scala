@@ -180,8 +180,12 @@ def write [TM[_], TA[_], TP[_]]
     ))
   ))
   try
-    Await.ready(resp, FiniteDuration(10, SECONDS))
-    true
+    val response = Await.ready(resp, FiniteDuration(10, SECONDS))
+    response.value match
+      case Some(scala.util.Success(_)) =>
+        true
+      case _ =>
+        false
   catch
     case _ =>
       false
