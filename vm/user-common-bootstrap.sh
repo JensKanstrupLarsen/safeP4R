@@ -24,6 +24,8 @@ sudo rm -rf tutorials
 sudo chown -R safeP4R:safeP4R /home/safeP4R/utils
 
 sudo chown -R safeP4R:safeP4R files
+sudo chmod +x files/send.py
+sudo chmod +x files/receive.py
 sudo mv files/* /home/safeP4R
 sudo rm -rf files
 

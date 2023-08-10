@@ -37,9 +37,9 @@ def setup_switch(p4info_file_path, bmv2_file_path, nm, ip_addr, dev_id, log_file
     return (sw,p4info_helper)
 
 if __name__ == '__main__':
-    (s1,p4info1) = setup_switch("./build/config1.p4.p4info.txt","./build/config1.json","s1","127.0.0.1:50051",0,"./logs/s1_p4runtime_requests.txt")
-    (s2,p4info2) = setup_switch("./build/config1.p4.p4info.txt","./build/config1.json","s2","127.0.0.1:50052",1,"./logs/s2_p4runtime_requests.txt")
-    (s3,p4info3) = setup_switch("./build/config2.p4.p4info.txt","./build/config2.json","s3","127.0.0.1:50053",2,"./logs/s3_p4runtime_requests.txt")
-    (s4,p4info4) = setup_switch("./build/config2.p4.p4info.txt","./build/config2.json","s4","127.0.0.1:50054",3,"./logs/s4_p4runtime_requests.txt")
+    (s1,p4info1) = setup_switch(sys.argv[1]+".p4.p4info.txt",sys.argv[1]+".json","s1","127.0.0.1:50051",0,"./logs/s1_p4runtime_requests.txt")
+    (s2,p4info2) = setup_switch(sys.argv[2]+".p4.p4info.txt",sys.argv[2]+".json","s2","127.0.0.1:50052",1,"./logs/s2_p4runtime_requests.txt")
+    (s3,p4info3) = setup_switch(sys.argv[3]+".p4.p4info.txt",sys.argv[3]+".json","s3","127.0.0.1:50053",2,"./logs/s3_p4runtime_requests.txt")
+    (s4,p4info4) = setup_switch(sys.argv[4]+".p4.p4info.txt",sys.argv[4]+".json","s4","127.0.0.1:50054",3,"./logs/s4_p4runtime_requests.txt")
 
     ShutdownAllSwitchConnections()  

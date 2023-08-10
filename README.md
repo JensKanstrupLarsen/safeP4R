@@ -310,6 +310,91 @@ To see how the update changes connectivity, run the `ping` command _before_
 running the control program, and observe how the pings only start to succeed
 after running the program.
 
+### Port forwarding management
+
+The example can be found in `$ROOT/safeP4R/src/main/scala/examples/router.scala`
+and can be executed by running (on the host machine, from inside the directory
+`$ROOT/safeP4R/`):
+
+    sbt "runMain router"
+
+__Effect__: The program first establishes full connectivity between hosts, then
+provides a CLI for inserting network address translation rules into `s4`.
+For the purpose of this example, we assume that `h1` to `h3` are subnets
+part of the same local network, and `h4` is an external network with a separate
+address scheme.
+
+For this example, first start mininet (in the VM) by running
+
+    make test_nat
+
+_Then_, start the port forwarding program (to set up full connectivity).
+Now, try to use the CLI to insert a rule. Each rule needs an external IP and port to
+map to, and the corresponding internal host (which always uses an IP from `10.0.1.1`
+to `10.0.3.3` and listens on port `8080`). Add a rule for the external IP `1.1.1.1`,
+external port `1111`, and internal host `1`. Then, try to read the rule.
+You should see an output similar to
+
+    Ingress rules:
+    (1.1.1.1:1111) -> (10.0.1.1:8080)
+    Egress rules:
+    (10.0.1.1:8080) -> (1.1.1.1:1111)
+
+Let us now test that the rule behaves correctly. For this example, we will not
+use the standard `ping` command to send packets, since it does not allow
+us to set the values of packet header fields (such as TCP ports). Instead,
+run the following command in mininet:
+
+    xterm h1 h4
+
+This will open a small console window for hosts `h1` and `h4`.
+In the window for `h1`, run:
+
+    ./receive.py
+
+This will start a program on host `h1` which listens for TCP packets on port 8080.
+
+You can now use the `send.py` program in the window for `h4` to send packets to one
+of the other hosts. Try to run:
+
+    ./send.py 1.1.1.1 1111 "hello"
+
+The message should then appear in the `h1` window as a message from `10.0.4.4:8080`.
+
+Finally, try to swap such that you listen with `receive.py` on `h4` and send from `h1`.
+In the window for `h1`, run:
+
+    ./send.py 10.0.4.4 8080 "hello again"
+
+The window for `h4` should display the message as received from the "translated" address
+of `h1`, namely `1.1.1.1:1111`.
+
+### Load balancing
+
+The example can be found in `$ROOT/safeP4R/src/main/scala/examples/loadbalancer.scala`
+and can be executed by running (on the host machine, from inside the directory
+`$ROOT/safeP4R/`):
+
+    sbt "runMain loadbalancer"
+
+__Effect__: The program manages load balancing of packets going through `s1` to `h4`.
+It will first establish full connectivity between hosts. Then, in intervals of 5
+seconds (for a total of one minute), it will read from the CounterEntry at `s1` and
+modify its forwarding rules accordingly such that packets are evenly sent between
+`s2`, `s3` and `s4`.
+
+For this example, first start mininet (in the VM) by running:
+
+    make test_lb
+
+To send packets, use:
+
+    h1 ping h4
+
+To see how the packets are distributed (and counted), run the `ping` command _after_
+running the control program. Observe how the control program counts the outgoing
+packets and updates the outgoing port accordingly.
+
 ## Creating a new scenario
 
 We now provide an small example to demonstrate how updating/extending a P4 configuration can cause

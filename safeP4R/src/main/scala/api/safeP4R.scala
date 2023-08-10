@@ -45,6 +45,10 @@ object TableEntry:
   def apply[TM[_], TA[_], TP[_]] (table : String, matches : TM[table.type], action : TA[table.type], params : TP[action.type], priority : Int) : TableEntry[TM, TA, TP, table.type, action.type] =
     TableEntry[TM, TA, TP, table.type, action.type](table, matches, action, params, priority)
 
+case class CounterEntry (counter_id : Int, index : Option[Long], data : Option[(Long, Long)])
+
+type P4Entity[TM[_], TA[_], TP[_], XN, XA <: TA[XN]] = TableEntry[TM, TA, TP, XN, XA] | CounterEntry
+
 /** Represents a connection channel to a target device.
   */
 abstract class Chan[TM[_], TA[_], TP[_]] (deviceId : Int, socket : P4RuntimeStub, channel : ManagedChannel):
@@ -60,10 +64,28 @@ abstract class Chan[TM[_], TA[_], TP[_]] (deviceId : Int, socket : P4RuntimeStub
     * to the underlying protobuf representation.
     */
   def toProto(te : TableEntry[TM, TA, TP, _, _]) : p4.v1.p4runtime.TableEntry
+  /** Converts a `CounterEntry` from the SafeP4R representation
+    * to the underlying protobuf representation.
+    */
+  def toProto(c : CounterEntry) : p4.v1.p4runtime.CounterEntry =
+    p4.v1.p4runtime.CounterEntry(
+      counterId = c.counter_id,
+      index = c.index.map(l => p4.v1.p4runtime.Index(l)),
+      data = c.data.map((byteCount, packetCount) => p4.v1.p4runtime.CounterData(byteCount, packetCount))
+  )
   /** Converts a `TableEntry` from the underlying protobuf representation
     * to the SafeP4R representation.
     */
   def fromProto[TM[_], TA[_], TP[_], XN <: String, XA <: TA[XN]](te : p4.v1.p4runtime.TableEntry) : TableEntry[TM, TA, TP, XN, XA]
+  /** Converts a `CounterEntry` from the underlying protobuf representation
+    * to the SafeP4R representation.
+    */
+  def fromProto(c : p4.v1.p4runtime.CounterEntry) : CounterEntry =
+  CounterEntry(
+    counter_id = c.counterId,
+    index = c.index.map(i => i.index),
+    data = c.data.map(d => (d.byteCount, d.packetCount))
+  )
   /** Disconnects the channel, shutting down the connection to the target.
     */
   def disconnect() : Unit =
@@ -82,14 +104,14 @@ class SafeP4RRuntimeObserver[O](lock : Object) extends StreamObserver[O] {
     print("[ERROR] " + t.toString() + "\n")
 }
 
-/** Reads the contents of a table by matching entries with a given table entry.
+/** Internal function that reads by matching entities with a 'querying' entity.
   *
   * @param c The channel used to communicate with the target device.
-  * @param tableEntry The table entry to match on. For details on how the matching works, see the P4Runtime specification.
-  * @return A list of table entries that match the given table entry.
+  * @param entity The entity to match on. For details on how the matching works, see the P4Runtime specification.
+  * @return A list of entities that match the given entity.
   */
-def read[TM[_], TA[_], TP[_]]
-  (c : Chan[TM, TA, TP], tableEntry : TableEntry[TM, TA, TP, _, _]) : Seq[TableEntry[TM, TA, TP, _, _]] =
+private def readAny[TM[_], TA[_], TP[_]]
+  (c : Chan[TM, TA, TP], entity : P4Entity[TM, TA, TP, _, _]) : Seq[P4Entity[TM, TA, TP, _, _]] =
   val lock = Object()
   val read_observer = new SafeP4RRuntimeObserver[p4.v1.p4runtime.ReadResponse](lock)
   c.getSocket().read(
@@ -97,7 +119,9 @@ def read[TM[_], TA[_], TP[_]]
       deviceId = c.getDeviceId(),
       entities = List(
         Entity (
-          entity = Entity.Entity.TableEntry(c.toProto(tableEntry))
+          entity match
+            case te : TableEntry[TM, TA, TP, _, _] => Entity.Entity.TableEntry(c.toProto(te))
+            case ce : CounterEntry => Entity.Entity.CounterEntry(c.toProto(ce))
         )
       )
     ),
@@ -106,11 +130,32 @@ def read[TM[_], TA[_], TP[_]]
   lock.synchronized {
     lock.wait()
   }
-  read_observer.getLog().last.entities.foldLeft(List[TableEntry[TM, TA, TP, _, _]]())((acc, e) => {
-    e.entity.tableEntry match
-      case None => acc
-      case Some(te) => acc :+ c.fromProto(te)
+  read_observer.getLog().last.entities.foldLeft(List[P4Entity[TM, TA, TP, _, _]]())((acc, e) => {
+    e.entity match
+      case Entity.Entity.TableEntry(te) => acc :+ c.fromProto(te)
+      case Entity.Entity.CounterEntry(ce) => acc :+ c.fromProto(ce)
+      case _ => acc
   })
+
+/** Reads the contents of a table by matching entries with a given table entry.
+  *
+  * @param c The channel used to communicate with the target device.
+  * @param entity The table entry to match on. For details on how the matching works, see the P4Runtime specification.
+  * @return A list of table entries that match the given table entry.
+  */
+def read[TM[_], TA[_], TP[_]]
+  (c : Chan[TM, TA, TP], entity : TableEntry[TM, TA, TP, _, _]) : Seq[TableEntry[TM, TA, TP, _, _]] =
+  readAny(c, entity).asInstanceOf[Seq[TableEntry[TM, TA, TP, _, _]]]
+
+/** Reads the contents of one or more counter entries.
+  *
+  * @param c The channel used to communicate with the target device.
+  * @param entity The 'querying' counter entry to match on. For details on how the matching works, see the P4Runtime specification.
+  * @return A list of counter entries that match the given entry.
+  */
+def readCounterEntry
+  (c : Chan[_, _, _], entity : CounterEntry) : Seq[CounterEntry] =
+  readAny(c, entity).asInstanceOf[Seq[CounterEntry]]
 
 /** Writes a table entry to a table.
   * API users should not call this method directly, but instead use the `insert`, `modify`, and `delete` methods.
@@ -121,16 +166,16 @@ def read[TM[_], TA[_], TP[_]]
   * @return A boolean indicating whether or not the write was successful (true if successful, false otherwise).
   */
 def write [TM[_], TA[_], TP[_]]
-  (c : Chan[TM, TA, TP], tableEntry : TableEntry[TM, TA, TP, _, _], ut : Update.Type) : Boolean =
+  (c : Chan[TM, TA, TP], entity : P4Entity[TM, TA, TP, _, _], ut : Update.Type) : Boolean =
   val resp = c.getSocket().write(WriteRequest(
     deviceId = c.getDeviceId(),
     electionId = Some(Uint128(high=0,low=1)),
     updates = List(Update(
       `type` = ut,
       entity = Some(Entity(
-        entity = Entity.Entity.TableEntry(
-          value = c.toProto(tableEntry)
-        )
+        entity match
+          case te : TableEntry[TM, TA, TP, _, _] => Entity.Entity.TableEntry(c.toProto(te))
+          case ce : CounterEntry => Entity.Entity.CounterEntry(c.toProto(ce))
       ))
     ))
   ))
@@ -148,8 +193,8 @@ def write [TM[_], TA[_], TP[_]]
   * @return A boolean indicating whether or not the insertion was successful (true if successful, false otherwise).
   */
 def insert [TM[_], TA[_], TP[_]]
-  (c : Chan[TM, TA, TP], tableEntry : TableEntry[TM, TA, TP, _, _]) : Boolean =
-  write(c, tableEntry, Update.Type.INSERT)
+  (c : Chan[TM, TA, TP], entity : P4Entity[TM, TA, TP, _, _]) : Boolean =
+  write(c, entity, Update.Type.INSERT)
 
 /** Modifies a table entry in a table.
   *
@@ -158,8 +203,8 @@ def insert [TM[_], TA[_], TP[_]]
   * @return A boolean indicating whether or not the modification was successful (true if successful, false otherwise).
   */
 def modify [TM[_], TA[_], TP[_]]
-  (c : Chan[TM, TA, TP], tableEntry : TableEntry[TM, TA, TP, _, _]) : Boolean =
-  write(c, tableEntry, Update.Type.MODIFY)
+  (c : Chan[TM, TA, TP], entity : P4Entity[TM, TA, TP, _, _]) : Boolean =
+  write(c, entity, Update.Type.MODIFY)
 
 /** Deletes a table entry from a table.
   *
@@ -168,8 +213,8 @@ def modify [TM[_], TA[_], TP[_]]
   * @return A boolean indicating whether or not the deletion was successful (true if successful, false otherwise).
   */
 def delete [TM[_], TA[_], TP[_]]
-  (c : Chan[TM, TA, TP], tableEntry : TableEntry[TM, TA, TP, _, _]) : Boolean =
-  write(c, tableEntry, Update.Type.DELETE)
+  (c : Chan[TM, TA, TP], entity : P4Entity[TM, TA, TP, _, _]) : Boolean =
+  write(c, entity, Update.Type.DELETE)
 
 /** A helper function for generating bytestrings from sequences of bytes.
   *
