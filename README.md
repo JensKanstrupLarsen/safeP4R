@@ -310,7 +310,7 @@ To see how the update changes connectivity, run the `ping` command _before_
 running the control program, and observe how the pings only start to succeed
 after running the program.
 
-### Port forwarding management
+### Port forwarding management (Section 8.2 in the companion paper)
 
 The example can be found in `$ROOT/safeP4R/src/main/scala/examples/router.scala`
 and can be executed by running (on the host machine, from inside the directory
@@ -369,7 +369,7 @@ In the window for `h1`, run:
 The window for `h4` should display the message as received from the "translated" address
 of `h1`, namely `1.1.1.1:1111`.
 
-### Load balancing
+### Load balancing (Section 8.3 in the companion paper)
 
 The example can be found in `$ROOT/safeP4R/src/main/scala/examples/loadbalancer.scala`
 and can be executed by running (on the host machine, from inside the directory
